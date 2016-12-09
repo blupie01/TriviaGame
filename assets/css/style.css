@@ -15,9 +15,24 @@ body {
 	text-align: center;
 }
 
+#startButton {
+	margin-top: 35%;
+	font-family: 'Audiowide';
+	font-size: 30px;
+	width: 20%;
+	height: 10%;
+}
+
 h1 {
 	font-size: 50px;
 	color: white;
 	font-family: 'Audiowide';
 	background-color: rgba(135, 124, 124, 0.6);
+}
+
+p {
+	font-size: 35px;
+	font-family: 'Audiowide';
+	color: white;
+	padding: 30px;
 }
