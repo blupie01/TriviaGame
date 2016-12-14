@@ -24,7 +24,7 @@ body {
 	height: 10%;
 }
 
-#heroButton {
+.heroButton {
 	font-family: 'Audiowide';
 	font-size: 20px;
 	width: 200px;
@@ -47,4 +47,13 @@ p {
 	font-family: 'Audiowide';
 	color: white;
 	padding: 30px;
+}
+
+#answerImg {
+	width: 960px;
+	height: 500px;
+}
+
+#ansResult {
+	color: white;
 }

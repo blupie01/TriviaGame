@@ -3,35 +3,43 @@ var questions = [
 	{audio : "assets/audio/FioraPROJECT.taunt01.ogg",
 	guesses : ["Janna", "Vi", "Ahri",
 				"Fiora", "Lissandra"],
-	answer: 3}, //Fiora
+	answer: 3,
+	hero_picture: "assets/images/Fiora.jpg"}, //Fiora
 	{audio : "assets/audio/Hecarim.attack5.ogg",
 	guesses : ["Thresh", "Garen", "Hecarim",
 				"Kallista", "Darius"],
-	answer : 2}, //Hecarim
+	answer : 2,
+	hero_picture: "assets/images/Hecarim.jpg"}, //Hecarim
 	{audio : "assets/audio/Jhin.tauntTahmKench05.ogg",
 	guesses : ["Jhin", "Teemo", "Yasuo", 
 				"Draven", "Mordekaiser"],
-	answer : 0}, //Jhin
+	answer : 0,
+	hero_picture: "assets/images/Jhin.jpg"}, //Jhin
 	{audio : "assets/audio/Kindred.tauntEkko01.ogg",
 	guesses : ["Sona", "Lux", "Leblanc",
 				"Ashe", "Kindred"],
-	answer : 4}, //Kindred
+	answer : 4,
+	hero_picture: "assets/images/Kindred.jpg"}, //Kindred
 	{audio : "assets/audio/Orianna_select.ogg",
 	guesses : ["Riven", "Nidalee", "Orianna",
 				"Lulu", "Elise"],
-	answer : 2}, //Orianna
+	answer : 2,
+	hero_picture: "assets/images/Orianna.jpg"}, //Orianna
 	{audio : "assets/audio/Rammus_Select.ogg",
 	guesses : ["Aatrox", "Rammus", "Graves", 
 				"Azir", "Kha'Zix"],
-	answer : 1}, //Rammus
+	answer : 1,
+	hero_picture: "assets/images/Rammus.jpg"}, //Rammus
 	{audio : "assets/audio/ThreshDarkStar.tauntVoidborn01.ogg",
 	guesses : ["Maokai", "Ekko", "Fiddlesticks",
 				"Thresh", "Malphite"],
-	answer : 3}, //Thresh
+	answer : 3,
+	hero_picture: "assets/images/Thresh.jpg"}, //Thresh
 	{audio : "assets/audio/ZombieBrand.joke.ogg",
 	guesses : ["Nautilus", "Olaf", "Trundle", 
 				"Brand", "Malzahar"],
-	answer : 3} //Brand
+	answer : 3,
+	hero_picture: "assets/images/Brand.png"} //Brand
 ];
 
 // other variables
@@ -71,9 +79,9 @@ function addAudio (audioFile){
 function makeHeroChoices(heroArray) {
 	for (var i = 0; i < heroArray.length; i++) {
 		//create button for hero name
-		var button = $("<button id='heroButton'>" + heroArray[i] + "</button>");
+		var button = $("<button class='heroButton'>" + heroArray[i] + "</button>");
 		//add data to button
-		button.attr("hero_value", i);
+		button.attr("data-hero", i);
 		//add button to screen
 		$("#heroChoices").append(button);
 	}
@@ -87,9 +95,26 @@ function reset() {
 //function for game rules and operations
 function startGame() {
 	$("#startButton").hide();
+	$("#instructions").html("<p>Who is this?</p>");
+	$("#timer").show();
+	$("#heroVoice").show();
+	$("#heroChoices").show();
+	$("#results").empty();
+
+	if (question_Index == questions.length) {
+		clearTimeout(counter);
+		$("#timer").hide();
+		$("#heroVoice").hide().empty();
+		$("#heroChoices").hide();
+		$("#results").show();
+		$("#results").append("<p>You got: " + ans_correct + " correct!</p>");
+		$("#results").append("<p>You got: " + ans_wrong + " wrong!</p>");
+
+		setTimeout(reset, 10000);
+	}
 
 	//time per question
-	var timer = 30;
+	var timer = 20;
 	//get question at current index
 	var currentAudio = questions[question_Index].audio;
 	//get hero choices array at current index
@@ -97,18 +122,25 @@ function startGame() {
 	//get answer at current index
 	var answer = questions[question_Index].answer;
 	//put time on screen
-	var displayTimer = $("#timer").html("<p>Time Remaining: " + timer + "</p>");
+	var displayTimer = $("#timer").text("<p>Time Remaining: " + timer + "</p>");
 	//set counter variable
-	counter = setInterval(thirtySecondTimer, 1000);
+	counter = setInterval(twentySecondTimer, 1000);
 
 	//function for thirty second countdown
-	function thirtySecondTimer() {
+	function twentySecondTimer() {
 		//if clock reaches 0
 		if (timer == 0) {
+			$("#instructions").hide();
+			$("#heroChoices").hide().empty();
+			$("#heroVoice").hide();
+			$("#timer").hide();
+			$("#results").show();
+			$("#results").append("<p id='ansResult'>Timed Out! The answer is: " + questions[question_Index].guesses[answer] + "</p>" + "<br>");
+			$("#results").append("<img id='answerImg' src=" + questions[question_Index].hero_picture + ">");
+			question_Index++;
+			ans_wrong++;
 			clearTimeout(counter);
-			$("#heroVoice").empty();
-			$("#heroChoices").html("No Time Left");
-			setTimeout(reset, 5000);
+			setTimeout(startGame, 5000);
 		}
 		else {
 			displayTimer.html("<p>Time Remaining: " + timer + "</p>");
@@ -122,22 +154,34 @@ function startGame() {
 	//call function to put choices on screen
 	makeHeroChoices(heroChoices);
 
-	$("#heroButton").on("click", function() {
-		var selectedAnswer = $(this).attr("hero_value");
-
+	$("button").on("click", function() {
+		var selectedAnswer = $(this).data("hero");
+		console.log(selectedAnswer);
 		if (selectedAnswer == answer) {
+			$("#instructions").hide();
+			$("#heroChoices").hide().empty();
+			$("#heroVoice").hide();
+			$("#timer").hide();
+			$("#results").show();
+			$("#results").append("<p id='ansResult'>Correct! The answer is: " + questions[question_Index].guesses[selectedAnswer] + "</p>" + "<br>");
+			$("#results").append("<img id='answerImg' src=" + questions[question_Index].hero_picture + ">");
 			question_Index++;
 			ans_correct++;
 			clearTimeout(counter);
-			$("#heroChoices").html("<p>Correct!</p>");
-			startGame();
+			setTimeout(startGame, 5000);
 		}
 		else if (selectedAnswer != answer) {
+			$("#instructions").hide();
+			$("#heroChoices").hide().empty();
+			$("#heroVoice").hide();
+			$("#timer").hide();
+			$("#results").show();
+			$("#results").append("<p id='ansResult'>Wrong! The answer is: " + questions[question_Index].guesses[answer] + "</p>" + "<br>");
+			$("#results").append("<img id='answerImg' src=" + questions[question_Index].hero_picture + ">");
 			question_Index++;
 			ans_wrong++;
 			clearTimeout(counter);
-			$("#heroChoices").html("<p>Wrong!</p>");
-			startGame();
+			setTimeout(startGame, 5000);
 		}
 	});
 }
